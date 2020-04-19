@@ -1,2 +1,2 @@
 # deyal-server
-An server API for deyal app
+A server API for deyal app

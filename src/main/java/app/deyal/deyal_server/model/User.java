@@ -11,7 +11,7 @@ import java.util.Date;
 public class User {
 
     @Id
-    private String _id;
+    private String id;
 
     @ApiModelProperty("Name of User")
     private String userName;
@@ -36,8 +36,8 @@ public class User {
     public User() {
     }
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
     public String getUserName() {

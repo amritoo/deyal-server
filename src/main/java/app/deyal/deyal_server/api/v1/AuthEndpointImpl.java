@@ -1,4 +1,4 @@
-package app.deyal.deyal_server.api.v2;
+package app.deyal.deyal_server.api.v1;
 
 import app.deyal.deyal_server.manager.AuthManager;
 import app.deyal.deyal_server.manager.JwtManager;
@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("AuthEndpoint_v2")
+@RestController("AuthEndpoint_v1")
 public class AuthEndpointImpl implements AuthEndpoint {
 
     private static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);

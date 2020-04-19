@@ -11,6 +11,7 @@ public class ApiError extends Exception {
     // Validity errors
     public static ApiError INVALID_EMAIL = new ApiError(100, "Email address is not valid");
     public static ApiError WRONG_PASSWORD = new ApiError(100, "Wrong Password");
+    public static ApiError INVALID = new ApiError(100, "Invalid");
 
     // Database errors
     public static ApiError EMAIL_EXISTS = new ApiError(101, "Email already exists");

@@ -39,9 +39,9 @@ public class JwtManager {
         expiration.setTime(expiration.getTime() + hours * 3_600_000);
         return Jwts.builder()
                 .signWith(jwtKey)
-                .setSubject(user.get_id())
+                .setSubject(user.getId())
                 .setIssuer(jwtIssuer)
-                .setId(user.get_id())
+                .setId(user.getId())
                 .claim("email", user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(expiration)

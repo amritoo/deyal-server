@@ -10,7 +10,7 @@ public class MissionEvent {
     private String id;
 
     private EventType eventType;
-    private String mission_id;
+    private String missionId;
     private Date eventTime;
 
     private Create create;
@@ -28,12 +28,12 @@ public class MissionEvent {
 
     public MissionEvent(EventType eventType) {
         this.eventType = eventType;
-        this.mission_id = "5e9af7c0ff648649f0410ac4";
+        this.missionId = "5e9af7c0ff648649f0410ac4";
         this.eventTime = new Date();
         switch (eventType) {
             case CREATE:
                 this.create = new Create();
-                this.create.setCreatedBy(this.mission_id);
+                this.create.setCreatedBy(this.missionId);
                 break;
             case UPDATE:
                 this.update = new Update();
@@ -75,12 +75,12 @@ public class MissionEvent {
         this.eventType = eventType;
     }
 
-    public String getMission_id() {
-        return mission_id;
+    public String getMissionId() {
+        return missionId;
     }
 
-    public void setMission_id(String mission_id) {
-        this.mission_id = mission_id;
+    public void setMissionId(String missionId) {
+        this.missionId = missionId;
     }
 
     public Date getEventTime() {

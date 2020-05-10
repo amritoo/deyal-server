@@ -28,14 +28,14 @@ public class AuthEndpointImpl implements AuthEndpoint {
     private PasswordManager passwordManager;
 
     @Override
-    public ResponseEntity<?> login(String email, String password) {
+    public ResponseEntity<?> login(String email, String password, boolean remember) {
         try {
             User user = authManager.retrieveUserByEmail(email);
             if(!passwordManager.matchWithHash(password, user.getPassword())) {
                 throw ApiError.WRONG_PASSWORD;
             }
 
-            String token = jwtManager.sign(user, 100);
+            String token = jwtManager.sign(user, (remember ? 8760 : 48)); // if remember = true, then 365 day: 
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(token));
         } catch (ApiError ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());

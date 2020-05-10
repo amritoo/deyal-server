@@ -19,7 +19,7 @@ public class MissionEventManager {
     public List<MissionEvent> findAllMissionEvents(String missionId) {
 //        add();
         MissionEvent probe = new MissionEvent();
-        probe.setMission_id(missionId);
+        probe.setMissionId(missionId);
         List<MissionEvent> entity = missionEventRepository.findAll(Example.of(probe), Sort.by(Sort.Direction.ASC, "eventTime"));
         return entity;
     }

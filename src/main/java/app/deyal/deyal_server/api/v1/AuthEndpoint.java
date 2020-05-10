@@ -32,7 +32,9 @@ public interface AuthEndpoint {
             @ApiParam(required = true, value = "Email Address")
             @RequestParam(value = "email") String email,
             @ApiParam(required = true, value = "Password")
-            @RequestParam(value = "password") String password
+            @RequestParam(value = "password") String password,
+            @ApiParam(required = true, value = "remember")
+            @RequestParam(value = "remember") boolean remember
     );
 
     @GetMapping(value = "/user")

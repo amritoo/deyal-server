@@ -1,13 +1,10 @@
-package app.deyal.deyal_server.api.v2;
+package app.deyal.deyal_server.api.admin;
 
-import app.deyal.deyal_server.manager.JwtManager;
+import app.deyal.deyal_server.manager.SecurityManager;
 import app.deyal.deyal_server.manager.MissionManager;
 import app.deyal.deyal_server.model.ApiError;
 import app.deyal.deyal_server.model.Mission;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,26 +16,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin
-@RestController("MissionEndpoint_v2")
+@RestController("MissionEndpoint_admin")
 @Api(tags = {"MissionEndpoint"}, value = "Handles Missions")
-@RequestMapping("/v2/mission")
+@RequestMapping("/admin/mission")
 public class MissionEndpoint {
-    private  static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
+    private  static final Logger log = LoggerFactory.getLogger(MissionEndpoint.class);
 
     @Autowired
     private MissionManager missionManager;
 
     @Autowired
-    private JwtManager jwtManager;
-
-    @GetMapping(value = "/list")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully showed mission lists", responseContainer = "List", response = Mission.class)
-    })
-    @ApiOperation("Shows the list of all missions")
-    ResponseEntity<?> list() {
-        return ResponseEntity.ok(ApiError.SUCCESS.toMap(missionManager.findAllMissions()));
-    }
+    private SecurityManager securityManager;
 
     @PostMapping(value = "/delete")
     public ResponseEntity<?> delete(
@@ -46,7 +34,7 @@ public class MissionEndpoint {
             @RequestParam(value = "Mission Id") String missionId
     ) {
         try {
-            String creatorId = jwtManager.verify(token);
+            String creatorId = securityManager.verify(token);
             Mission mission = missionManager.retrieveMissionById(missionId);
 
             missionManager.deleteMission(mission);

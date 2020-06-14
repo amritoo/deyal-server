@@ -3,6 +3,9 @@ package app.deyal.deyal_server.model.events;
 public class Reject {
     private String rejectMessage;
 
+    public Reject() {
+    }
+
     public Reject(String rejectMessage) {
         this.rejectMessage = rejectMessage;
     }

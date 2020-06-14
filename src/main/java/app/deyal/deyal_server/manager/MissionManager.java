@@ -4,8 +4,11 @@ import app.deyal.deyal_server.dao.MissionRepository;
 import app.deyal.deyal_server.model.ApiError;
 import app.deyal.deyal_server.model.Mission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +34,14 @@ public class MissionManager {
         missionRepository.save(mission);
     }
 
+    public List<Mission> findMyMissions(ArrayList<String> missionIds) throws ApiError {
+        List<Mission> missions = new ArrayList<>();
+        for (String missionId : missionIds) {
+            missions.add(retrieveMissionById(missionId));
+        }
+        return missions;
+    }
+
     public Mission retrieveMissionById(String missionId) throws ApiError {
         Optional<Mission> entity = missionRepository.findById(missionId);
         if (!entity.isPresent()) {
@@ -38,6 +49,17 @@ public class MissionManager {
         }
 
         return entity.get();
+    }
+
+    public List<Mission> retrieveMissionByTitle(String title) throws ApiError {
+        Mission probe = new Mission();
+        probe.setTitle(title);
+        List<Mission> entity = missionRepository.findAll(Example.of(probe), Sort.by(Sort.Direction.ASC, "id"));
+        if (entity.isEmpty()) {
+            throw ApiError.NOT_FOUND;
+        }
+
+        return entity;
     }
 
     public List<Mission> retrieveMission(String creatorId, String title) throws ApiError {

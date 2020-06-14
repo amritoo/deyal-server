@@ -17,8 +17,22 @@ public interface MissionEventEndpoint {
     })
     @ApiOperation("Shows the list of all events of a mission")
     ResponseEntity<?> list(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token,
             @ApiParam(required = true, value = "Mission Id")
-            @RequestParam(value = "Mission Id") String missionId
+            @RequestParam(value = "missionId") String missionId
+    );
+
+    @PostMapping(value = "/add")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully created mission event")
+    })
+    @ApiOperation("Creates a mission event")
+    ResponseEntity<?> addEventToMission(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token,
+            @ApiParam(required = true, value = "Mission Event")
+            @RequestBody MissionEvent missionEvent
     );
 
 }

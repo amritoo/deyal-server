@@ -15,7 +15,7 @@ public class Mission {
     @ApiModelProperty(required = true, position = 2)
     private String longDescription;
     @ApiModelProperty(required = true, position = 3)
-    private int difficulty;
+    private MissionDifficulty difficulty;
 
     @ApiModelProperty(hidden = true)
     private String creatorId;
@@ -26,7 +26,7 @@ public class Mission {
     public Mission() {
     }
 
-    public Mission(String title, String description, String longDescription, int difficulty) {
+    public Mission(String title, String description, String longDescription, MissionDifficulty difficulty) {
         this.title = title;
         this.description = description;
         this.longDescription = longDescription;
@@ -65,11 +65,11 @@ public class Mission {
         this.longDescription = longDescription;
     }
 
-    public int getDifficulty() {
+    public MissionDifficulty getDifficulty() {
         return difficulty;
     }
 
-    public void setDifficulty(int difficulty) {
+    public void setDifficulty(MissionDifficulty difficulty) {
         this.difficulty = difficulty;
     }
 

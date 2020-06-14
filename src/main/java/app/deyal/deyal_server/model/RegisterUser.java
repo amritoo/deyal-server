@@ -2,6 +2,7 @@ package app.deyal.deyal_server.model;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class RegisterUser {
@@ -30,6 +31,8 @@ public class RegisterUser {
         user.setEmail(email);
         user.setPassword(password);
         user.setPhoneNumber(phoneNumber);
+        user.setMissionInfo(new MissionInfo());
+        user.setNotifications(new ArrayList<>());
         user.setRegistrationDate(new Date());
         return user;
     }

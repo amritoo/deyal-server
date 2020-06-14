@@ -1,6 +1,7 @@
-package app.deyal.deyal_server.api.v2;
+package app.deyal.deyal_server.api.admin;
 
 import app.deyal.deyal_server.manager.AuthManager;
+import app.deyal.deyal_server.manager.MailManager;
 import app.deyal.deyal_server.model.ApiError;
 import app.deyal.deyal_server.model.User;
 import io.swagger.annotations.Api;
@@ -18,17 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin
-@RestController("AuthEndpoint_v2")
+@RestController("AuthEndpoint_admin")
 @Api(tags = {"AuthEndpoint"}, value = "Handles Authentications")
-@RequestMapping("/v2/auth")
+@RequestMapping("/admin/auth")
 public class AuthEndpoint {
     private  static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
-
-    private final Map<String, User> db = new HashMap<>();
 
     @Autowired
     private AuthManager authManager;
 
+    @Autowired
+    private MailManager mailManager;
 
     @GetMapping(value = "/list")
     @ApiResponses(value = {

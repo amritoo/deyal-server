@@ -3,6 +3,9 @@ package app.deyal.deyal_server.model.events;
 public class Submit {
     private String proofOfWork;
 
+    public Submit() {
+    }
+
     public Submit(String proofOfWork) {
         this.proofOfWork = proofOfWork;
     }

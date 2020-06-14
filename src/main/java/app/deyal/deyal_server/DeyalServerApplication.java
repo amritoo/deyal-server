@@ -22,4 +22,5 @@ public class DeyalServerApplication {
                 .apis(RequestHandlerSelectors.basePackage("app.deyal.deyal_server"))
                 .build();
     }
+
 }

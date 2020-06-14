@@ -4,6 +4,9 @@ public class Assign {
     private String assignTo;
     private String assignMessage;
 
+    public Assign() {
+    }
+
     public Assign(String assignTo, String assignMessage) {
         this.assignTo = assignTo;
         this.assignMessage = assignMessage;

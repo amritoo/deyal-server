@@ -4,6 +4,9 @@ public class Request {
     private String requestBy;
     private String requestMessage;
 
+    public Request() {
+    }
+
     public Request(String requestBy, String requestMessage) {
         this.requestBy = requestBy;
         this.requestMessage = requestMessage;

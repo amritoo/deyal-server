@@ -2,10 +2,11 @@ package app.deyal.deyal_server.manager;
 
 import app.deyal.deyal_server.dao.UserRepository;
 import app.deyal.deyal_server.model.ApiError;
+import app.deyal.deyal_server.model.Notification;
+import app.deyal.deyal_server.model.RequestType;
 import app.deyal.deyal_server.model.User;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,13 +35,9 @@ public class AuthManager {
     }
 
     public User retrieveUserByEmail(String email) throws ApiError {
-        User probe = new User();
-        probe.setEmail(email);
-        Optional<User> entity = userRepository.findOne(Example.of(probe));
-        if (!entity.isPresent()) {
+        Optional<User> entity = userRepository.findByEmail(email);
+        if (!entity.isPresent())
             throw ApiError.EMAIL_NOT_FOUND;
-        }
-
         return entity.get();
     }
 
@@ -49,7 +46,6 @@ public class AuthManager {
         if (!entity.isPresent()) {
             throw ApiError.NOT_FOUND;
         }
-
         return entity.get();
     }
 
@@ -57,13 +53,64 @@ public class AuthManager {
         if (!EmailValidator.getInstance().isValid(email)) {
             throw ApiError.INVALID_EMAIL;
         }
-
-        User probe = new User();
-        probe.setEmail(email);
-        Optional<User> entity = userRepository.findOne(Example.of(probe));
+        Optional<User> entity = userRepository.findByEmail(email);
         if (entity.isPresent()) {
             throw ApiError.EMAIL_EXISTS;
         }
+    }
+
+    public void addMissionToUser(String userId, String missionId, RequestType type) throws ApiError {
+        User user = retrieveUserById(userId);
+        if (user.getAllMissionInfoExceptOngoing().contains(missionId))   //does not add if it is already added
+            return;
+        switch (type) {
+            case CREATE:
+                user.getMissionInfo().getCreated().add(missionId);
+                break;
+            case COMPLETED:
+                user.getMissionInfo().getOngoing().remove(missionId);
+                user.getMissionInfo().getCompleted().add(missionId);
+                break;
+            case FAILED:
+                user.getMissionInfo().getOngoing().remove(missionId);
+                user.getMissionInfo().getFailed().add(missionId);
+                break;
+            case ONGOING:
+                user.getMissionInfo().getOngoing().add(missionId);
+                break;
+        }
+        updateUser(user);
+    }
+
+    public void changeRating(String userId, RequestType type) throws ApiError {
+        User user = retrieveUserById(userId);
+        switch (type) {
+            case CLIENT_INCREASE:
+                user.getMissionInfo().changeRatingAsClient(true);
+                break;
+            case CLIENT_DECREASE:
+                user.getMissionInfo().changeRatingAsClient(false);
+                break;
+            case CLIENT_DECREASE_MORE:
+                user.getMissionInfo().changeRatingAsClient(false);
+                user.getMissionInfo().changeRatingAsClient(false);
+                user.getMissionInfo().changeRatingAsClient(false);
+                break;
+            case CONTRACTOR_INCREASE:
+                user.getMissionInfo().changeRatingAsContractor(true);
+                break;
+            case CONTRACTOR_DECREASE:
+                user.getMissionInfo().changeRatingAsContractor(false);
+                break;
+        }
+        user.calculateReputation();
+        updateUser(user);
+    }
+
+    public void addNotificationToUser(String userId, String message, String missionId) throws ApiError {
+        User user = retrieveUserById(userId);
+        user.getNotifications().add(new Notification(message, missionId));
+        updateUser(user);
     }
 
 }

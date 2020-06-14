@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @ApiModel("UserData")
@@ -21,19 +22,41 @@ public class User {
     private String email;
 
     private String password;
-    private String dateOfBirth;
+    private long dateOfBirth;
     private String phoneNumber;
 
     private Address address;
 
     private MissionInfo missionInfo;
-    private int reputation;
+    private double reputation;
+    private ArrayList<Notification> notifications;
 
     private Date registrationDate;
 
     /*............................................................................................................*/
 
     public User() {
+    }
+
+    public ArrayList<String> getAllMissionInfoExceptOngoing() {
+        ArrayList<String> missions = new ArrayList<>();
+        missions.addAll(missionInfo.getCreated());
+        missions.addAll(missionInfo.getCompleted());
+        missions.addAll(missionInfo.getFailed());
+        return missions;
+    }
+
+    public ArrayList<String> getAllMissionInfo() {
+        ArrayList<String> missions = new ArrayList<>();
+        missions.addAll(missionInfo.getCreated());
+        missions.addAll(missionInfo.getCompleted());
+        missions.addAll(missionInfo.getFailed());
+        missions.addAll(missionInfo.getOngoing());
+        return missions;
+    }
+
+    public void calculateReputation() {
+        reputation = (missionInfo.getRatingAsClient() + missionInfo.getRatingAsContractor()) / 10.0;
     }
 
     public String getId() {
@@ -72,11 +95,11 @@ public class User {
         this.password = password;
     }
 
-    public String getDateOfBirth() {
+    public long getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(long dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -104,12 +127,20 @@ public class User {
         this.missionInfo = missionInfo;
     }
 
-    public int getReputation() {
+    public double getReputation() {
         return reputation;
     }
 
-    public void setReputation(int reputation) {
+    public void setReputation(double reputation) {
         this.reputation = reputation;
+    }
+
+    public ArrayList<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(ArrayList<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public Date getRegistrationDate() {

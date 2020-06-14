@@ -13,6 +13,7 @@ public class MissionEvent {
     private String missionId;
     private Date eventTime;
 
+    //creation depends on eventType
     private Create create;
     private Update update;
     private Publish publish;
@@ -26,45 +27,56 @@ public class MissionEvent {
     public MissionEvent() {
     }
 
-    public MissionEvent(EventType eventType) {
+    public MissionEvent(String missionId, EventType eventType) {
         this.eventType = eventType;
-        this.missionId = "5e9af7c0ff648649f0410ac4";
+        this.missionId = missionId;
         this.eventTime = new Date();
-        switch (eventType) {
-            case CREATE:
-                this.create = new Create();
-                this.create.setCreatedBy(this.missionId);
-                break;
-            case UPDATE:
-                this.update = new Update();
-                this.update.setOldMission(new Mission());
-                break;
-            case PUBLISH:
-                this.publish = new Publish();
-                break;
-            case REQUEST:
-                this.request = new Request("5e9af7c0ff648649f0410ac5", "I can certainly do it!");
-                break;
-            case ASSIGN:
-                this.assign = new Assign("5e9af7c0ff648649f0410ac5", "Alright! You got the job!!");
-                break;
-            case SUBMIT:
-                this.submit = new Submit("Here is all the proof needed.");
-                break;
-            case APPROVE:
-                this.approve = new Approve("You've done well. I accept your work.");
-                break;
-            case REJECT:
-                this.reject = new Reject("No, you didn't finish it as requested. Sadly, I cannot accept your work.");
-                break;
-            case REVIEW:
-                this.review = new Review(4.5, "This was a nice mission.");
-                break;
-        }
+    }
+
+    public void create(String createdBy) {
+        this.create = new Create();
+        this.create.setCreatedBy(createdBy);
+    }
+
+    public void request(String requestBy, String message) {
+        this.request = new Request();
+        this.request.setRequestBy(requestBy);
+        this.request.setRequestMessage(message);
+    }
+
+    public void assign(String assignTo, String message) {
+        this.assign = new Assign();
+        this.assign.setAssignTo(assignTo);
+        this.assign.setAssignMessage(message);
+    }
+
+    public void submit(String proof) {
+        this.submit = new Submit();
+        this.submit.setProofOfWork(proof);
+    }
+
+    public void approve(String message) {
+        this.approve = new Approve();
+        this.approve.setApproveMessage(message);
+    }
+
+    public void reject(String message) {
+        this.reject = new Reject();
+        this.reject.setRejectMessage(message);
+    }
+
+    public void review(boolean gotReward, String message) {
+        this.review = new Review();
+        this.review.setGotReward(gotReward);
+        this.review.setMessage(message);
     }
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public EventType getEventType() {

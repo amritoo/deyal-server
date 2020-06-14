@@ -6,6 +6,10 @@ public class Publish {
     public Publish() {
     }
 
+    public Publish(String note) {
+        this.note = note;
+    }
+
     public String getNote() {
         return note;
     }

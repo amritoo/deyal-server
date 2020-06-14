@@ -14,7 +14,7 @@ public interface AuthEndpoint {
 
     @PostMapping(value = "/register")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully created new account")
+            @ApiResponse(code = 200, message = "Successfully created new account", response = User.class)
     })
     @ApiOperation("Registers a new user")
     ResponseEntity<?> register(
@@ -24,17 +24,14 @@ public interface AuthEndpoint {
 
     @PostMapping(value = "/login")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully logged in", response = User.class),
-            @ApiResponse(code = 0, message = "Successfully logged in", response = User.class)
+            @ApiResponse(code = 200, message = "Successfully logged in")
     })
     @ApiOperation("Login an existing user")
     ResponseEntity<?> login(
             @ApiParam(required = true, value = "Email Address")
             @RequestParam(value = "email") String email,
             @ApiParam(required = true, value = "Password")
-            @RequestParam(value = "password") String password,
-            @ApiParam(required = true, value = "remember")
-            @RequestParam(value = "remember") boolean remember
+            @RequestParam(value = "password") String password
     );
 
     @GetMapping(value = "/user")
@@ -47,9 +44,9 @@ public interface AuthEndpoint {
             @RequestParam(value = "token") String token
     );
 
-    @PutMapping(value = "/update")
+    @PutMapping(value = "/update/user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully updated User", response = User.class)
+            @ApiResponse(code = 200, message = "Successfully updated User")
     })
     @ApiOperation("Updates an existing user")
     ResponseEntity<?> update(
@@ -59,18 +56,53 @@ public interface AuthEndpoint {
             @RequestBody User user
     );
 
-    @PostMapping(value = "/changepassword")
+    @PostMapping(value = "/update/password")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved User", response = User.class)
+            @ApiResponse(code = 200, message = "Successfully changed to new password")
     })
     @ApiOperation("Changes user password")
     ResponseEntity<?> changePassword(
             @ApiParam(required = true, value = "Token")
             @RequestParam(value = "token") String token,
             @ApiParam(required = true, value = "Old Password")
-            @RequestParam(value = "old password") String oldPassword,
+            @RequestParam(value = "oldPassword") String oldPassword,
             @ApiParam(required = true, value = "New Password")
-            @RequestParam(value = "new password") String newPassword
+            @RequestParam(value = "newPassword") String newPassword
     );
 
+    @GetMapping(value = "/search")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved User", response = User.class)
+    })
+    @ApiOperation("Retrieves an existing user by userId")
+    ResponseEntity<?> search(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token,
+            @ApiParam(required = true, value = "UserId")
+            @RequestParam(value = "userId") String id
+    );
+
+    @PostMapping(value = "/forgot/send")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully send email")
+    })
+    @ApiOperation("Sends an email to user's email with an OTP")
+    ResponseEntity<?> forgot(
+            @ApiParam(required = true, value = "Email")
+            @RequestParam(value = "email") String email
+    );
+
+    @PostMapping(value = "/forgot/verify")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully verified")
+    })
+    @ApiOperation("Verifies the OTP and changes password")
+    ResponseEntity<?> verify(
+            @ApiParam(required = true, value = "Email")
+            @RequestParam(value = "email") String email,
+            @ApiParam(required = true, value = "OTP")
+            @RequestParam(value = "otp") String otp,
+            @ApiParam(required = true, value = "Password")
+            @RequestParam(value = "password") String password
+    );
 }

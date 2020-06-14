@@ -1,14 +1,15 @@
 package app.deyal.deyal_server.manager;
 
 import app.deyal.deyal_server.dao.MissionEventRepository;
+import app.deyal.deyal_server.model.ApiError;
 import app.deyal.deyal_server.model.MissionEvent;
-import app.deyal.deyal_server.model.events.EventType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MissionEventManager {
@@ -16,38 +17,29 @@ public class MissionEventManager {
     @Autowired
     private MissionEventRepository missionEventRepository;
 
-    public List<MissionEvent> findAllMissionEvents(String missionId) {
-//        add();
+    public void deleteEvent(MissionEvent missionEvent) {
+        missionEventRepository.delete(missionEvent);
+    }
+
+    public MissionEvent findById(String eventId) throws ApiError {
+        Optional<MissionEvent> entity = missionEventRepository.findById(eventId);
+        if(!entity.isPresent())
+            throw ApiError.NOT_FOUND;
+        return entity.get();
+    }
+
+    public List<MissionEvent> findAllMissionEvents(String missionId) throws ApiError {
         MissionEvent probe = new MissionEvent();
         probe.setMissionId(missionId);
         List<MissionEvent> entity = missionEventRepository.findAll(Example.of(probe), Sort.by(Sort.Direction.ASC, "eventTime"));
+        if (entity.isEmpty()) {
+            throw ApiError.NOT_FOUND;
+        }
         return entity;
     }
 
-    private void add() {
-        missionEventRepository.insert(new MissionEvent(EventType.CREATE));
-        missionEventRepository.insert(new MissionEvent(EventType.UPDATE));
-        missionEventRepository.insert(new MissionEvent(EventType.UPDATE));
-        missionEventRepository.insert(new MissionEvent(EventType.UPDATE));
-        missionEventRepository.insert(new MissionEvent(EventType.PUBLISH));
-        missionEventRepository.insert(new MissionEvent(EventType.REQUEST));
-        missionEventRepository.insert(new MissionEvent(EventType.REQUEST));
-        missionEventRepository.insert(new MissionEvent(EventType.REQUEST));
-        missionEventRepository.insert(new MissionEvent(EventType.REQUEST));
-        missionEventRepository.insert(new MissionEvent(EventType.ASSIGN));
-        missionEventRepository.insert(new MissionEvent(EventType.SUBMIT));
-        missionEventRepository.insert(new MissionEvent(EventType.APPROVE));
-        missionEventRepository.insert(new MissionEvent(EventType.REVIEW));
-
-        missionEventRepository.insert(new MissionEvent(EventType.CREATE));
-        missionEventRepository.insert(new MissionEvent(EventType.UPDATE));
-        missionEventRepository.insert(new MissionEvent(EventType.UPDATE));
-        missionEventRepository.insert(new MissionEvent(EventType.UPDATE));
-        missionEventRepository.insert(new MissionEvent(EventType.PUBLISH));
-        missionEventRepository.insert(new MissionEvent(EventType.REQUEST));
-        missionEventRepository.insert(new MissionEvent(EventType.ASSIGN));
-        missionEventRepository.insert(new MissionEvent(EventType.SUBMIT));
-        missionEventRepository.insert(new MissionEvent(EventType.REJECT));
-        missionEventRepository.insert(new MissionEvent(EventType.REVIEW));
+    public void addEvent(MissionEvent missionEvent) {
+        missionEventRepository.insert(missionEvent);
     }
+
 }

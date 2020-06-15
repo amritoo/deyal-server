@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Map;
 
 @RestController("AuthEndpoint_v1")
 public class AuthEndpointImpl implements AuthEndpoint {
@@ -191,6 +192,22 @@ public class AuthEndpointImpl implements AuthEndpoint {
             return ResponseEntity.ok(ApiError.SUCCESS.toMap("Password changed successfully"));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> listUserName(String token) {
+        try {
+            String userId = securityManager.verify(token);
+            User user = authManager.retrieveUserById(userId);
+
+            Map<String, String> userNameMap = authManager.userNameMap();
+            return ResponseEntity.ok(ApiError.SUCCESS.toMap(userNameMap));
+        } catch (ApiError ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
         } catch (Exception ex) {
             log.error("Unknown exception", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());

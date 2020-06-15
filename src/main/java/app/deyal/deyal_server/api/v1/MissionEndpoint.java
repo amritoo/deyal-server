@@ -28,7 +28,7 @@ public interface MissionEndpoint {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved mission", responseContainer = "List", response = Mission.class)
     })
-    @ApiOperation("Retrieves an existing mission")
+    @ApiOperation("Retrieves a list of existing missions with given title")
     ResponseEntity<?> search(
             @ApiParam(required = true, value = "Token")
             @RequestParam String token,

@@ -31,6 +31,7 @@ public class RegisterUser {
         user.setEmail(email);
         user.setPassword(password);
         user.setPhoneNumber(phoneNumber);
+        user.setDateOfBirth(10957);
         user.setMissionInfo(new MissionInfo());
         user.setNotifications(new ArrayList<>());
         user.setRegistrationDate(new Date());

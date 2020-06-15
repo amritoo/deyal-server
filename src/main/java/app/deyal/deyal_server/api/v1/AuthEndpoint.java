@@ -6,11 +6,23 @@ import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin
 @RestController("AuthEndpoint_v1")
 @Api(tags = {"AuthEndpoint"}, value = "Handles Authentications")
 @RequestMapping("/v1/auth")
 public interface AuthEndpoint {
+
+    @GetMapping(value = "/list/name")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved User name list", response = Map.class)
+    })
+    @ApiOperation("Retrieves an existing user")
+    ResponseEntity<?> listUserName(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token
+    );
 
     @PostMapping(value = "/register")
     @ApiResponses(value = {

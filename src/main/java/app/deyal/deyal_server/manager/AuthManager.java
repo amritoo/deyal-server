@@ -9,7 +9,9 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -57,6 +59,15 @@ public class AuthManager {
         if (entity.isPresent()) {
             throw ApiError.EMAIL_EXISTS;
         }
+    }
+
+    public Map<String, String> userNameMap() {
+        List<User> userArrayList = findAllUsers();
+        Map<String, String> userMap = new HashMap<>();
+        for (User user : userArrayList) {
+            userMap.put(user.getId(), user.getUserName());
+        }
+        return userMap;
     }
 
     public void addMissionToUser(String userId, String missionId, RequestType type) throws ApiError {

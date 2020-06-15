@@ -31,7 +31,7 @@ public class AuthEndpoint {
     @Autowired
     private MailManager mailManager;
 
-    @GetMapping(value = "/list")
+    @GetMapping(value = "/list/all")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully showed user lists", responseContainer = "List", response = User.class)
     })

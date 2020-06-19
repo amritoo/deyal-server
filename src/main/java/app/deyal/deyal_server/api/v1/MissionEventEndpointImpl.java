@@ -76,15 +76,15 @@ public class MissionEventEndpointImpl implements MissionEventEndpoint {
                 case REJECT:
                     authManager.addMissionToUser(mission.getContractorId(), missionEvent.getMissionId(), RequestType.FAILED);
                     authManager.addNotificationToUser(mission.getContractorId(), Message.missionRejectedNotification, mission.getId());
-                    authManager.changeRating(mission.getCreatorId(), RequestType.CLIENT_DECREASE);          //decrease creator rating
-                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_DECREASE);   //decrease contractor rating
+                    authManager.changeRating(mission.getCreatorId(), RequestType.CLIENT_DECREASE, mission.getDifficulty());          //decrease creator rating
+                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_DECREASE, mission.getDifficulty());   //decrease contractor rating
                     break;
                 case REVIEW:
                     authManager.addMissionToUser(user.getId(), missionEvent.getMissionId(), RequestType.COMPLETED);
                     authManager.addNotificationToUser(mission.getCreatorId(), Message.missionCompletedNotification, mission.getId());
-                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_INCREASE);   //increase contractor rating
+                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_INCREASE, mission.getDifficulty());   //increase contractor rating
                     authManager.changeRating(mission.getCreatorId(),    //increase or decrease creator rating based on reward given or not
-                            missionEvent.getReview().isGotReward() ? RequestType.CLIENT_INCREASE : RequestType.CLIENT_DECREASE_MORE);
+                            missionEvent.getReview().isGotReward() ? RequestType.CLIENT_INCREASE : RequestType.CLIENT_DECREASE_MORE, mission.getDifficulty());
                     break;
             }
             return ResponseEntity.ok(ApiError.SUCCESS.toMap());

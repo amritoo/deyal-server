@@ -54,7 +54,10 @@ public class User {
     }
 
     public void calculateReputation() {
-        reputation = missionInfo.getRatingAsClient() + missionInfo.getRatingAsContractor();
+        long totalRating = missionInfo.getRatingAsClient() + missionInfo.getRatingAsContractor();
+        if (totalRating >= (1L << reputation) * 100) {
+            reputation++;
+        }
     }
 
     /*............................................................................................................*/

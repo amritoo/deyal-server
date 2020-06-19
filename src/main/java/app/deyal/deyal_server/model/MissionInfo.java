@@ -22,19 +22,43 @@ public class MissionInfo {
         ongoing = new ArrayList<>();
     }
 
-    public void changeRatingAsClient(boolean increase) {
-        if(increase) {
-            ratingAsClient += ratingAsClient >= 50 ?  2 : 5;
-        } else {
-            ratingAsClient -= ratingAsClient >= 50 ? 2 : 5;
+    public void changeRatingAsClient(boolean increase, MissionDifficulty missionDifficulty) {
+        switch (missionDifficulty) {
+            case VERY_EASY:
+                ratingAsClient += increase ? 10 : -10;
+                break;
+            case EASY:
+                ratingAsClient += increase ? 20 : -20;
+                break;
+            case MEDIUM:
+                ratingAsClient += increase ? 30 : -30;
+                break;
+            case HARD:
+                ratingAsClient += increase ? 40 : -40;
+                break;
+            case VERY_HARD:
+                ratingAsClient += increase ? 50 : -50;
+                break;
         }
     }
 
-    public void changeRatingAsContractor(boolean increase) {
-        if(increase) {
-            ratingAsContractor += ratingAsContractor >= 50 ? 2 : 5;
-        } else {
-            ratingAsContractor -= ratingAsContractor >= 50 ? 2 : 5;
+    public void changeRatingAsContractor(boolean increase, MissionDifficulty missionDifficulty) {
+        switch (missionDifficulty) {
+            case VERY_EASY:
+                ratingAsContractor += increase ? 10 : -10;
+                break;
+            case EASY:
+                ratingAsContractor += increase ? 20 : -20;
+                break;
+            case MEDIUM:
+                ratingAsContractor += increase ? 30 : -30;
+                break;
+            case HARD:
+                ratingAsContractor += increase ? 40 : -40;
+                break;
+            case VERY_HARD:
+                ratingAsContractor += increase ? 50 : -50;
+                break;
         }
     }
 

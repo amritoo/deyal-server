@@ -1,10 +1,7 @@
 package app.deyal.deyal_server.manager;
 
 import app.deyal.deyal_server.dao.UserRepository;
-import app.deyal.deyal_server.model.ApiError;
-import app.deyal.deyal_server.model.Notification;
-import app.deyal.deyal_server.model.RequestType;
-import app.deyal.deyal_server.model.User;
+import app.deyal.deyal_server.model.*;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,25 +90,25 @@ public class AuthManager {
         updateUser(user);
     }
 
-    public void changeRating(String userId, RequestType type) throws ApiError {
+    public void changeRating(String userId, RequestType type, MissionDifficulty missionDifficulty) throws ApiError {
         User user = retrieveUserById(userId);
         switch (type) {
             case CLIENT_INCREASE:
-                user.getMissionInfo().changeRatingAsClient(true);
+                user.getMissionInfo().changeRatingAsClient(true, missionDifficulty);
                 break;
             case CLIENT_DECREASE:
-                user.getMissionInfo().changeRatingAsClient(false);
+                user.getMissionInfo().changeRatingAsClient(false, missionDifficulty);
                 break;
             case CLIENT_DECREASE_MORE:
-                user.getMissionInfo().changeRatingAsClient(false);
-                user.getMissionInfo().changeRatingAsClient(false);
-                user.getMissionInfo().changeRatingAsClient(false);
+                user.getMissionInfo().changeRatingAsClient(false, missionDifficulty);
+                user.getMissionInfo().changeRatingAsClient(false, missionDifficulty);
+                user.getMissionInfo().changeRatingAsClient(false, missionDifficulty);
                 break;
             case CONTRACTOR_INCREASE:
-                user.getMissionInfo().changeRatingAsContractor(true);
+                user.getMissionInfo().changeRatingAsContractor(true, missionDifficulty);
                 break;
             case CONTRACTOR_DECREASE:
-                user.getMissionInfo().changeRatingAsContractor(false);
+                user.getMissionInfo().changeRatingAsContractor(false, missionDifficulty);
                 break;
         }
         user.calculateReputation();

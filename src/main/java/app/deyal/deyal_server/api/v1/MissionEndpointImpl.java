@@ -49,7 +49,6 @@ public class MissionEndpointImpl implements MissionEndpoint {
             missionEventManager.addEvent(missionEvent);
 
             authManager.addMissionToUser(creatorId, mission.getId(), RequestType.CREATE);
-            authManager.changeRating(creatorId, RequestType.CLIENT_INCREASE);       //increase creator rating
             authManager.addNotificationToUser(creatorId, Message.missionCreatedNotification, mission.getId());
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(mission));
         } catch (ApiError er) {

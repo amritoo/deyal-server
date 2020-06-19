@@ -4,53 +4,55 @@ import java.util.ArrayList;
 
 public class MissionInfo {
 
-    private double ratingAsClient;
-    private double ratingAsContractor;
+    private long ratingAsClient;
+    private long ratingAsContractor;
     private ArrayList<String> created;
     private ArrayList<String> completed;
     private ArrayList<String> failed;
     private ArrayList<String> ongoing;
 
+    /*............................................................................................................*/
+
     public MissionInfo() {
-        this.ratingAsClient = 0.0;
-        this.ratingAsContractor = 0.0;
+        this.ratingAsClient = 0;
+        this.ratingAsContractor = 0;
         created = new ArrayList<>();
         completed = new ArrayList<>();
         failed = new ArrayList<>();
         ongoing = new ArrayList<>();
     }
 
-    /* ------------------------------------------------------------------------- */
-
     public void changeRatingAsClient(boolean increase) {
         if(increase) {
-            ratingAsClient += ratingAsClient >= 5.0 ? 0.25 : 0.5;
+            ratingAsClient += ratingAsClient >= 50 ?  2 : 5;
         } else {
-            ratingAsClient -= ratingAsClient >= 5.0 ? 0.25 : 0.5;
+            ratingAsClient -= ratingAsClient >= 50 ? 2 : 5;
         }
     }
 
     public void changeRatingAsContractor(boolean increase) {
         if(increase) {
-            ratingAsContractor += ratingAsContractor >= 5.0 ? 0.5 : 1.0;
+            ratingAsContractor += ratingAsContractor >= 50 ? 2 : 5;
         } else {
-            ratingAsContractor -= ratingAsContractor >= 5.0 ? 0.25 : 0.5;
+            ratingAsContractor -= ratingAsContractor >= 50 ? 2 : 5;
         }
     }
 
-    public double getRatingAsClient() {
+    /*............................................................................................................*/
+
+    public long getRatingAsClient() {
         return ratingAsClient;
     }
 
-    public void setRatingAsClient(double ratingAsClient) {
+    public void setRatingAsClient(long ratingAsClient) {
         this.ratingAsClient = ratingAsClient;
     }
 
-    public double getRatingAsContractor() {
+    public long getRatingAsContractor() {
         return ratingAsContractor;
     }
 
-    public void setRatingAsContractor(double ratingAsContractor) {
+    public void setRatingAsContractor(long ratingAsContractor) {
         this.ratingAsContractor = ratingAsContractor;
     }
 
@@ -85,4 +87,5 @@ public class MissionInfo {
     public void setOngoing(ArrayList<String> ongoing) {
         this.ongoing = ongoing;
     }
+
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Stack;
 
 public class RegisterUser {
 
@@ -33,7 +34,7 @@ public class RegisterUser {
         user.setPhoneNumber(phoneNumber);
         user.setDateOfBirth(10957);
         user.setMissionInfo(new MissionInfo());
-        user.setNotifications(new ArrayList<>());
+        user.setNotifications(new Stack<>());
         user.setRegistrationDate(new Date());
         return user;
     }

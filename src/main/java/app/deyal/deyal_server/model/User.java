@@ -3,12 +3,14 @@ package app.deyal.deyal_server.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Stack;
 
 @ApiModel("UserData")
+@CompoundIndex(def = "{'userName':1, 'email':1}", unique = true, name = "unique_fields")
 public class User {
 
     @Id
@@ -16,21 +18,17 @@ public class User {
 
     @ApiModelProperty("Name of User")
     private String userName;
-    private String fullName;
-
-    @Indexed(unique = true)
     private String email;
-
     private String password;
+
+    private String fullName;
     private long dateOfBirth;
     private String phoneNumber;
-
     private Address address;
 
     private MissionInfo missionInfo;
-    private double reputation;
-    private ArrayList<Notification> notifications;
-
+    private long reputation;
+    private Stack<Notification> notifications;
     private Date registrationDate;
 
     /*............................................................................................................*/
@@ -56,8 +54,10 @@ public class User {
     }
 
     public void calculateReputation() {
-        reputation = (missionInfo.getRatingAsClient() + missionInfo.getRatingAsContractor()) / 10.0;
+        reputation = missionInfo.getRatingAsClient() + missionInfo.getRatingAsContractor();
     }
+
+    /*............................................................................................................*/
 
     public String getId() {
         return id;
@@ -69,14 +69,6 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -93,6 +85,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public long getDateOfBirth() {
@@ -127,19 +127,19 @@ public class User {
         this.missionInfo = missionInfo;
     }
 
-    public double getReputation() {
+    public long getReputation() {
         return reputation;
     }
 
-    public void setReputation(double reputation) {
+    public void setReputation(long reputation) {
         this.reputation = reputation;
     }
 
-    public ArrayList<Notification> getNotifications() {
+    public Stack<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(ArrayList<Notification> notifications) {
+    public void setNotifications(Stack<Notification> notifications) {
         this.notifications = notifications;
     }
 
@@ -150,4 +150,5 @@ public class User {
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
     }
+
 }

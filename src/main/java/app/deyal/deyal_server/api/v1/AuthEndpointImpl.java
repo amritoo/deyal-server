@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.Map;
 
 @RestController("AuthEndpoint_v1")
 public class AuthEndpointImpl implements AuthEndpoint {
@@ -156,7 +155,7 @@ public class AuthEndpointImpl implements AuthEndpoint {
     public ResponseEntity<?> forgot(String email) {
         try {
             String otp = securityManager.generateOTP();
-            if(otpManager.isEmailExist(email)){
+            if (otpManager.isEmailExist(email)) {
                 otpManager.deleteOTPData(otpManager.retrieveOTPDataByEmail(email));
             }
             OTPData otpData = new OTPData(email, otp);
@@ -199,13 +198,11 @@ public class AuthEndpointImpl implements AuthEndpoint {
     }
 
     @Override
-    public ResponseEntity<?> listUserName(String token) {
+    public ResponseEntity<?> username(String token, String userId) {
         try {
-            String userId = securityManager.verify(token);
-            User user = authManager.retrieveUserById(userId);
-
-            Map<String, String> userNameMap = authManager.userNameMap();
-            return ResponseEntity.ok(ApiError.SUCCESS.toMap(userNameMap));
+            String id = securityManager.verify(token);
+            String name = authManager.retrieveUsername(userId);
+            return ResponseEntity.ok(ApiError.SUCCESS.toMap(name));
         } catch (ApiError ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
         } catch (Exception ex) {
@@ -213,4 +210,5 @@ public class AuthEndpointImpl implements AuthEndpoint {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
         }
     }
+
 }

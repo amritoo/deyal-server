@@ -58,13 +58,8 @@ public class AuthManager {
         }
     }
 
-    public Map<String, String> userNameMap() {
-        List<User> userArrayList = findAllUsers();
-        Map<String, String> userMap = new HashMap<>();
-        for (User user : userArrayList) {
-            userMap.put(user.getId(), user.getUserName());
-        }
-        return userMap;
+    public String retrieveUsername(String userId) throws ApiError {
+        return retrieveUserById(userId).getUserName();
     }
 
     public void addMissionToUser(String userId, String missionId, RequestType type) throws ApiError {

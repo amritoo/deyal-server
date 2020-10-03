@@ -19,9 +19,13 @@ public class Mission {
 
     @ApiModelProperty(hidden = true)
     private String creatorId;
+    @ApiModelProperty(hidden = true)
+    private String creatorName;
 
     @ApiModelProperty(hidden = true)
     private String contractorId;
+    @ApiModelProperty(hidden = true)
+    private String contractorName;
 
     public Mission() {
     }
@@ -81,6 +85,14 @@ public class Mission {
         this.creatorId = creatorId;
     }
 
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
     public String getContractorId() {
         return contractorId;
     }
@@ -88,4 +100,13 @@ public class Mission {
     public void setContractorId(String contractorId) {
         this.contractorId = contractorId;
     }
+
+    public String getContractorName() {
+        return contractorName;
+    }
+
+    public void setContractorName(String contractorName) {
+        this.contractorName = contractorName;
+    }
+
 }

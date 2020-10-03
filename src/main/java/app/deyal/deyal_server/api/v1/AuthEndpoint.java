@@ -14,16 +14,6 @@ import java.util.Map;
 @RequestMapping("/v1/auth")
 public interface AuthEndpoint {
 
-    @GetMapping(value = "/list/name")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved User name list", response = Map.class)
-    })
-    @ApiOperation("Retrieves an existing user")
-    ResponseEntity<?> listUserName(
-            @ApiParam(required = true, value = "Token")
-            @RequestParam(value = "token") String token
-    );
-
     @PostMapping(value = "/register")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created new account", response = User.class)
@@ -54,6 +44,18 @@ public interface AuthEndpoint {
     ResponseEntity<?> user(
             @ApiParam(required = true, value = "Token")
             @RequestParam(value = "token") String token
+    );
+
+    @GetMapping(value = "/search/name")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved Username", response = String.class)
+    })
+    @ApiOperation("Retrieves an existing username by userId")
+    ResponseEntity<?> username(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token,
+            @ApiParam(required = true, value = "User Id")
+            @RequestParam(value = "userId") String userId
     );
 
     @PutMapping(value = "/update/user")

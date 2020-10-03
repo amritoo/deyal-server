@@ -40,11 +40,12 @@ public class MissionEndpointImpl implements MissionEndpoint {
             User user = authManager.retrieveUserById(creatorId);
 
             mission.setCreatorId(creatorId);
+            mission.setCreatorName(user.getUserName());
             mission.setContractorId(null);
             mission.setId(null);
             missionManager.createMission(mission);
 
-            MissionEvent missionEvent = new MissionEvent(mission.getId(), EventType.CREATE);
+            MissionEvent missionEvent = new MissionEvent(mission.getId(), EventType.CREATE, user.getUserName());
             missionEvent.create(creatorId);
             missionEventManager.addEvent(missionEvent);
 

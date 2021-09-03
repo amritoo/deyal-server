@@ -1,4 +1,4 @@
-package app.deyal.deyal_server.api.v1;
+package app.deyal.deyal_server.api.admin;
 
 import app.deyal.deyal_server.manager.AuthManager;
 import app.deyal.deyal_server.manager.MissionEventManager;

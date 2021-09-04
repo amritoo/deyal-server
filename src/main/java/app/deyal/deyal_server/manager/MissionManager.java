@@ -37,7 +37,11 @@ public class MissionManager {
     public List<Mission> findMyMissions(ArrayList<String> missionIds) throws ApiError {
         List<Mission> missions = new ArrayList<>();
         for (String missionId : missionIds) {
-            missions.add(retrieveMissionById(missionId));
+            try {
+                Mission mission = retrieveMissionById(missionId);
+                missions.add(mission);
+            } catch (ApiError ignored) {
+            }
         }
         return missions;
     }

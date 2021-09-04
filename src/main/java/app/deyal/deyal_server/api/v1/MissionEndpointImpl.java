@@ -39,7 +39,7 @@ public class MissionEndpointImpl implements MissionEndpoint {
             String userId = securityManager.verify(token);
             User user = authManager.retrieveUserById(userId);
 
-            List<Mission> missions = missionManager.findAllMissions();
+            List<Mission> missions = missionManager.findAllMissionsSorted();
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(missions));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());

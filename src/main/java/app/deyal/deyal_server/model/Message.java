@@ -38,7 +38,7 @@ public interface Message {
 
     String missionCreatedNotification = "You have created a new Mission.";
 
-    String missionUpdatedNotification = "Your mission was Updated (by Admin).";
+    String missionUpdatedNotification = "Your mission was updated (by Admin).";
 
     String missionRequestedNotification = "Someone requested one of your created missions.";
 

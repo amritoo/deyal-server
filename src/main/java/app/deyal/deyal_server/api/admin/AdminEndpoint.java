@@ -48,7 +48,7 @@ public interface AdminEndpoint {
             @RequestParam(value = "email") String email
     );
 
-    @PostMapping(value = "/auth/user/delete")
+    @DeleteMapping(value = "/auth/user/delete")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully deleted user")
     })
@@ -60,7 +60,7 @@ public interface AdminEndpoint {
             @RequestParam(value = "userId") String id
     );
 
-    @PostMapping(value = "/mission/delete")
+    @DeleteMapping(value = "/mission/delete")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully deleted mission")
     })
@@ -72,7 +72,7 @@ public interface AdminEndpoint {
             @RequestParam(value = "missionId") String missionId
     );
 
-    @PostMapping(value = "/missionEvent/delete")
+    @DeleteMapping(value = "/missionEvent/delete")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully deleted event from given mission")
     })

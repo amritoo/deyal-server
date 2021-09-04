@@ -1,6 +1,7 @@
 package app.deyal.deyal_server.api.admin;
 
 import app.deyal.deyal_server.manager.AuthManager;
+import app.deyal.deyal_server.manager.MailManager;
 import app.deyal.deyal_server.manager.MissionEventManager;
 import app.deyal.deyal_server.manager.MissionManager;
 import app.deyal.deyal_server.model.*;
@@ -29,43 +30,65 @@ public class AdminEndpointImpl implements AdminEndpoint {
     @Autowired
     private MissionEventManager missionEventManager;
 
+    @Autowired
+    private MailManager mailManager;
+
     @Value("${admin.password}")
     private String adminPass;
 
     @Override
     public ResponseEntity<?> userList(String password) {
-        if (!password.equals(adminPass))
+        if (!password.equals(adminPass)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.WRONG_PASSWORD.toMap());
-        return ResponseEntity.ok(ApiError.SUCCESS.toMap(authManager.findAllUsers()));
+        }
+
+        try {
+            return ResponseEntity.ok(ApiError.SUCCESS.toMap(authManager.findAllUsers()));
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
+        }
     }
 
     @Override
     public ResponseEntity<?> userExist(String password, String email) {
-        if (!password.equals(adminPass))
+        if (!password.equals(adminPass)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.WRONG_PASSWORD.toMap());
+        }
 
         try {
             User user = authManager.retrieveUserByEmail(email);
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(user));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
         }
     }
 
     @Override
     public ResponseEntity<?> userEmailChange(String password, String id, String email) {
-        if (!password.equals(adminPass))
+        if (!password.equals(adminPass)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.WRONG_PASSWORD.toMap());
+        }
 
         try {
             User oldUser = authManager.retrieveUserById(id);
+            String oldEmail = oldUser.getEmail();
 
             authManager.validateEmail(email);
             oldUser.setEmail(email);
 
-            // Todo send email to new email, confirmation
             authManager.updateUser(oldUser);
             authManager.addNotificationToUser(id, Message.profileUpdateNotification, null);
+            mailManager.sendEmail(oldEmail,
+                    "Email changed",
+                    "Hello,\nYour account email has been changed to " + email + Message.emailChangeEmailOld);
+            mailManager.sendEmail(email,
+                    "Email changed",
+                    Message.emailChangeEmailNew);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap("User email changed successfully"));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(er.toMap());
@@ -77,8 +100,9 @@ public class AdminEndpointImpl implements AdminEndpoint {
 
     @Override
     public ResponseEntity<?> userDelete(String password, String id) {
-        if (!password.equals(adminPass))
+        if (!password.equals(adminPass)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.WRONG_PASSWORD.toMap());
+        }
 
         try {
             User user = authManager.retrieveUserById(id);
@@ -89,13 +113,17 @@ public class AdminEndpointImpl implements AdminEndpoint {
             return ResponseEntity.ok(response);
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
         }
     }
 
     @Override
     public ResponseEntity<?> missionDelete(String password, String missionId) {
-        if (!password.equals(adminPass))
+        if (!password.equals(adminPass)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.WRONG_PASSWORD.toMap());
+        }
 
         try {
             Mission mission = missionManager.retrieveMissionById(missionId);
@@ -106,13 +134,17 @@ public class AdminEndpointImpl implements AdminEndpoint {
             return ResponseEntity.ok(response);
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
         }
     }
 
     @Override
     public ResponseEntity<?> eventDelete(String password, String eventId) {
-        if (!password.equals(adminPass))
+        if (!password.equals(adminPass)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.WRONG_PASSWORD.toMap());
+        }
 
         try {
             MissionEvent missionEvent = missionEventManager.findById(eventId);
@@ -123,6 +155,9 @@ public class AdminEndpointImpl implements AdminEndpoint {
             return ResponseEntity.ok(response);
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
         }
     }
 }

@@ -1,7 +1,5 @@
 package app.deyal.deyal_server.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 
@@ -9,14 +7,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Stack;
 
-@ApiModel("UserData")
+//@ApiModel("UserData")
 @CompoundIndex(def = "{'userName':1, 'email':1}", unique = true, name = "unique_fields")
 public class User {
 
     @Id
     private String id;
 
-    @ApiModelProperty("Name of User")
+    //@ApiModelProperty("Name of User")
     private String userName;
     private String email;
     private String password;
@@ -55,6 +53,7 @@ public class User {
 
     public void calculateReputation() {
         long totalRating = missionInfo.getRatingAsClient() + missionInfo.getRatingAsContractor();
+        // 2 ^ reputation * 100. So, total rating will double for each reputation level
         if (totalRating >= (1L << reputation) * 100) {
             reputation++;
         }

@@ -1,14 +1,10 @@
 package app.deyal.deyal_server.model;
 
-import io.swagger.annotations.ApiModelProperty;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Stack;
 
 public class RegisterUser {
 
-    @ApiModelProperty("Name of RegisterUser")
     private String userName;
     private String fullName;
     private String email;

@@ -1,48 +1,57 @@
 package app.deyal.deyal_server.model;
 
-public class Message {
+public interface Message {
+
+    String emailSignature = "\nWith best regards,\nDeyal Team.";
 
     //For Emails
-    public static String registerEmail = "Hello,\n" +
+    String registerEmail = "Hello,\n" +
             "Your email was provided for registration on Deyal app and you were successfully registered.\n" +
-            "Thank you for your interest in Deyal app.\n" +
-            "If it was not you, please contact us at deyal.app@gmail.com.\n" +
+            "Thank you for your interest in the Deyal app.\n" +
             "\n" +
-            "With best regards,\n" +
-            "Deyal Team.";
+            "If it wasn't you, please contact us at deyal.app@gmail.com.\n" + emailSignature;
 
-    public static String otpEmail = "Hello,\n" +
-            "Here is your one time code. Please use it to verify in Deyal app within 15 minutes.\n" +
+    String otpEmail = "Hello,\n" +
+            "Here is your one time code (OTP). Please verify it in the Deyal app within 10 minutes.\n" +
             "Code: ";
 
-    public static String passwordChangeEmail = "Hello,\n" +
+    String passwordChangeEmail = "Hello,\n" +
             "Your password has been changed.\n" +
-            "If it wasn't you, then please contact us at deyal.app@gmail.com.\n" +
             "\n" +
-            "With best regards,\n" +
-            "Deyal Team.";
+            "If it wasn't you, then please contact us at deyal.app@gmail.com.\n" + emailSignature;
+
+    String emailChangeEmailOld = ". You can no longer use this email to login.\n" +
+            "\n" +
+            "If it wasn't you, then please contact us at deyal.app@gmail.com.\n" + emailSignature;
+
+    String emailChangeEmailNew = "Hello,\n" +
+            "Your account email has been changed. Please use this email to login to your account.\n" +
+            "\n" +
+            "If it wasn't you, then please contact us at deyal.app@gmail.com.\n" + emailSignature;
 
     //For Notifications
-    public static String registerNotification = "Your Account has been created. For any help, please goto help option.";
+    String registerNotification = "Your Account has been created. For any help, please goto help option.";
 
-    public static String profileUpdateNotification = "Your profile has been updated.";
+    String profileUpdateNotification = "Your profile has been updated.";
 
-    public static String passwordChangeNotification = "Password has been changed.";
+    String passwordChangeNotification = "Account password changed.";
 
-    public static String missionCreatedNotification = "You have created a new Mission.";
+    String missionCreatedNotification = "You have created a new Mission.";
 
-    public static String missionUpdatedNotification = "Your mission was Updated (by Admin).";
+    String missionUpdatedNotification = "Your mission was updated (by Admin).";
 
-    public static String missionRequestedNotification = "Someone requested one of your created mission.";
+    String missionRequestedNotification = "Someone requested one of your created missions.";
 
-    public static String missionAssignedNotification = "You have been assigned to complete one of your pending requests.";
+    String missionAssignedNotification = "You have been assigned to complete one of your pending requests.";
 
-    public static String missionSubmittedNotification = "One of your created missions have a new submission. Please judge it.";
+    String missionSubmittedNotification = "One of your created missions have a new submission. Please judge it.";
 
-    public static String missionApprovedNotification = "Your submission has been approved. Please collect your rewards from the client.";
+    String missionApprovedNotification = "Hurray! your submission was approved. Please collect your rewards from the client.";
 
-    public static String missionRejectedNotification = "Your submission has been rejected. Please contact the client if you want to know why.";
+    String missionRejectedNotification = "Sadly, your submission was rejected. Please contact the client if you want to know why.";
 
-    public static String missionCompletedNotification = "One of your created mission was successfully completed.";
+    String missionCompletedNotificationClient = "Hurray! One of your created missions was successfully completed.";
+
+    String missionCompletedNotificationContractor = "Hurray! One of your missions was successfully completed.";
 
 }

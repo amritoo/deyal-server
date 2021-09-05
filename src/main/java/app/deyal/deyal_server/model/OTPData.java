@@ -1,11 +1,9 @@
 package app.deyal.deyal_server.model;
 
-import io.swagger.annotations.ApiModel;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 
-@ApiModel("OTPData")
 public class OTPData {
     @Id
     private String id;
@@ -20,7 +18,7 @@ public class OTPData {
     public OTPData(String email, String otp) {
         this.email = email;
         this.otp = otp;
-        this.expiryTime = new Date();   //expires after 15 minutes
+        this.expiryTime = new Date();
         this.expiryTime.setTime(this.expiryTime.getTime() + 900_000);   //expires after 15 minutes
     }
 

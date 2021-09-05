@@ -34,10 +34,28 @@ public class MissionManager {
         missionRepository.save(mission);
     }
 
+    public List<Mission> findAllMissionsSorted() {
+        List<Mission> missions = findAllMissions();
+
+        List<Mission> assigned = new ArrayList<>();
+        List<Mission> notAssigned = new ArrayList<>();
+        for (Mission mission : missions) {
+            if (mission.getContractorId() != null)
+                assigned.add(mission);
+            else notAssigned.add(mission);
+        }
+        notAssigned.addAll(assigned);
+        return notAssigned;
+    }
+
     public List<Mission> findMyMissions(ArrayList<String> missionIds) throws ApiError {
         List<Mission> missions = new ArrayList<>();
         for (String missionId : missionIds) {
-            missions.add(retrieveMissionById(missionId));
+            try {
+                Mission mission = retrieveMissionById(missionId);
+                missions.add(mission);
+            } catch (ApiError ignored) {
+            }
         }
         return missions;
     }

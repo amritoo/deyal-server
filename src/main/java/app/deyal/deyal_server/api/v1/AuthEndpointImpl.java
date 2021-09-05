@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.Map;
 
 @RestController("AuthEndpoint_v1")
 public class AuthEndpointImpl implements AuthEndpoint {
@@ -21,23 +20,22 @@ public class AuthEndpointImpl implements AuthEndpoint {
     private static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
 
     @Autowired
-    private AuthManager authManager;
-
-    @Autowired
     private SecurityManager securityManager;
 
     @Autowired
-    private OTPManager otpManager;
+    private AuthManager authManager;
 
     @Autowired
     private MailManager mailManager;
+
+    @Autowired
+    private OTPManager otpManager;
 
     @Override
     public ResponseEntity<?> register(RegisterUser registerUser) {
         try {
             authManager.validateEmail(registerUser.getEmail());
             User user = registerUser.toUser();
-
             String passwordHash = securityManager.getHash(user.getPassword());
             user.setPassword(passwordHash);
 
@@ -46,6 +44,7 @@ public class AuthEndpointImpl implements AuthEndpoint {
             mailManager.sendEmail(user.getEmail(),
                     "Account created",
                     Message.registerEmail);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(user));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(er.toMap());
@@ -62,10 +61,12 @@ public class AuthEndpointImpl implements AuthEndpoint {
             if (!securityManager.matchWithHash(password, user.getPassword())) {
                 throw ApiError.WRONG_PASSWORD;
             }
-            String token = securityManager.sign(user, 8760); // set token validity to 365 days
+
+            // set token validity to 90 days = 2160 hours
+            String token = securityManager.sign(user, 2160);
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(token));
-        } catch (ApiError ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
+        } catch (ApiError er) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
         } catch (Exception ex) {
             log.error("Unknown exception", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
@@ -78,9 +79,44 @@ public class AuthEndpointImpl implements AuthEndpoint {
             String id = securityManager.verify(token);
             User user = authManager.retrieveUserById(id);
             user.setPassword(null);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(user));
-        } catch (ApiError ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
+        } catch (ApiError er) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> search(String token, String id) {
+        try {
+            String userId = securityManager.verify(token);
+            User user = authManager.retrieveUserById(userId);
+
+            User requestedUser = authManager.retrieveUserById(id);
+            requestedUser.setPassword(null);
+
+            return ResponseEntity.ok(ApiError.SUCCESS.toMap(requestedUser));
+        } catch (ApiError er) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
+        } catch (Exception ex) {
+            log.error("Unknown exception", ex);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> username(String token, String userId) {
+        try {
+            String id = securityManager.verify(token);
+            User user = authManager.retrieveUserById(id);
+
+            String name = authManager.retrieveUsername(userId);
+            return ResponseEntity.ok(ApiError.SUCCESS.toMap(name));
+        } catch (ApiError er) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
         } catch (Exception ex) {
             log.error("Unknown exception", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
@@ -101,9 +137,10 @@ public class AuthEndpointImpl implements AuthEndpoint {
 
             authManager.updateUser(oldUser);
             authManager.addNotificationToUser(id, Message.profileUpdateNotification, null);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap("User data updated successfully"));
-        } catch (ApiError ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
+        } catch (ApiError er) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
         } catch (Exception ex) {
             log.error("Unknown exception", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
@@ -126,6 +163,7 @@ public class AuthEndpointImpl implements AuthEndpoint {
             mailManager.sendEmail(user.getEmail(),
                     "Password changed",
                     Message.passwordChangeEmail);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap("Password changed successfully"));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
@@ -136,36 +174,24 @@ public class AuthEndpointImpl implements AuthEndpoint {
     }
 
     @Override
-    public ResponseEntity<?> search(String token, String id) {
-        try {
-            String userId = securityManager.verify(token);
-            User user = authManager.retrieveUserById(userId);
-
-            User requestedUser = authManager.retrieveUserById(id);
-            requestedUser.setPassword(null);
-            return ResponseEntity.ok(ApiError.SUCCESS.toMap(requestedUser));
-        } catch (ApiError ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
-        } catch (Exception ex) {
-            log.error("Unknown exception", ex);
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
-        }
-    }
-
-    @Override
     public ResponseEntity<?> forgot(String email) {
         try {
-            String otp = securityManager.generateOTP();
-            if(otpManager.isEmailExist(email)){
+            User user = authManager.retrieveUserByEmail(email);
+
+            if (otpManager.isEmailExist(email)) {
                 otpManager.deleteOTPData(otpManager.retrieveOTPDataByEmail(email));
             }
-            OTPData otpData = new OTPData(email, otp);
 
+            String otp = securityManager.generateOTP();
+            OTPData otpData = new OTPData(email, otp);
             otpManager.saveOTPData(otpData);
             mailManager.sendEmail(email,
                     "Password change code",
-                    Message.otpEmail + otp + "\n\nWith best regards,\nDeyal Team.");
+                    Message.otpEmail + otp + "\n" + Message.emailSignature);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap());
+        } catch (ApiError er) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er.toMap());
         } catch (Exception ex) {
             log.error("Unknown exception", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
@@ -176,12 +202,12 @@ public class AuthEndpointImpl implements AuthEndpoint {
     public ResponseEntity<?> verify(String email, String otp, String password) {
         try {
             OTPData otpData = otpManager.retrieveOTPDataByEmail(email);
-            if (!otpData.getEmail().equals(email) || !otpData.getOtp().equals(otp) || !otpData.getExpiryTime().after(new Date())) {
+            if (!otpData.getEmail().equals(email) || !otpData.getOtp().equals(otp) || otpData.getExpiryTime().before(new Date())) {
                 throw ApiError.INVALID_OTP;
             }
             otpManager.deleteOTPData(otpData);
-            User user = authManager.retrieveUserByEmail(email);
 
+            User user = authManager.retrieveUserByEmail(email);
             String passwordHash = securityManager.getHash(password);
             user.setPassword(passwordHash);
             authManager.updateUser(user);
@@ -189,6 +215,7 @@ public class AuthEndpointImpl implements AuthEndpoint {
             mailManager.sendEmail(user.getEmail(),
                     "Password changed",
                     Message.passwordChangeEmail);
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap("Password changed successfully"));
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
@@ -198,19 +225,4 @@ public class AuthEndpointImpl implements AuthEndpoint {
         }
     }
 
-    @Override
-    public ResponseEntity<?> listUserName(String token) {
-        try {
-            String userId = securityManager.verify(token);
-            User user = authManager.retrieveUserById(userId);
-
-            Map<String, String> userNameMap = authManager.userNameMap();
-            return ResponseEntity.ok(ApiError.SUCCESS.toMap(userNameMap));
-        } catch (ApiError ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.toMap());
-        } catch (Exception ex) {
-            log.error("Unknown exception", ex);
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
-        }
-    }
 }

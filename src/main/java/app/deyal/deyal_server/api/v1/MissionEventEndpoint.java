@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController("MissionEventEndpoint_v1")
-@Api(tags = {"MissionEventEndpoint"}, value = "Handles Mission Events")
+@Api(tags = {"MissionEventEndpoint"}, value = "Handles mission event operations")
 @RequestMapping("/v1/event")
 public interface MissionEventEndpoint {
 
@@ -15,11 +15,11 @@ public interface MissionEventEndpoint {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully showed mission event lists", responseContainer = "List", response = MissionEvent.class)
     })
-    @ApiOperation("Shows the list of all events of a mission")
+    @ApiOperation("Shows the list of all events in a mission")
     ResponseEntity<?> list(
             @ApiParam(required = true, value = "Token")
             @RequestParam(value = "token") String token,
-            @ApiParam(required = true, value = "Mission Id")
+            @ApiParam(required = true, value = "Mission id")
             @RequestParam(value = "missionId") String missionId
     );
 
@@ -27,11 +27,11 @@ public interface MissionEventEndpoint {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully created mission event")
     })
-    @ApiOperation("Creates a mission event")
+    @ApiOperation("Creates and adds a mission event to a mission")
     ResponseEntity<?> addEventToMission(
             @ApiParam(required = true, value = "Token")
             @RequestParam(value = "token") String token,
-            @ApiParam(required = true, value = "Mission Event")
+            @ApiParam(required = true, value = "Mission event")
             @RequestBody MissionEvent missionEvent
     );
 

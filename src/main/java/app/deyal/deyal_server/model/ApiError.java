@@ -10,6 +10,7 @@ public class ApiError extends Exception {
 
     // Validity errors
     public static ApiError INVALID_EMAIL = new ApiError(100, "Email address is not valid");
+    public static ApiError EMAIL_NOT_VERIFIED = new ApiError(100, "Email address could not be verified");
     public static ApiError WRONG_PASSWORD = new ApiError(100, "Wrong Password");
     public static ApiError INVALID = new ApiError(100, "Invalid");
     public static ApiError INVALID_OTP = new ApiError(100, "Invalid code");

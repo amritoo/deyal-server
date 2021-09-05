@@ -12,6 +12,7 @@ public class MissionEvent {
     private EventType eventType;
     private String missionId;
     private Date eventTime;
+    private String username;
 
     //creation depends on eventType
     private Create create;
@@ -27,10 +28,11 @@ public class MissionEvent {
     public MissionEvent() {
     }
 
-    public MissionEvent(String missionId, EventType eventType) {
+    public MissionEvent(String missionId, EventType eventType, String username) {
         this.eventType = eventType;
         this.missionId = missionId;
         this.eventTime = new Date();
+        this.username = username;
     }
 
     public void create(String createdBy) {
@@ -101,6 +103,14 @@ public class MissionEvent {
 
     public void setEventTime(Date eventTime) {
         this.eventTime = eventTime;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Approve getApprove() {

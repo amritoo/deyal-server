@@ -1,9 +1,9 @@
 package app.deyal.deyal_server.api.v1;
 
 import app.deyal.deyal_server.manager.AuthManager;
-import app.deyal.deyal_server.manager.SecurityManager;
 import app.deyal.deyal_server.manager.MissionEventManager;
 import app.deyal.deyal_server.manager.MissionManager;
+import app.deyal.deyal_server.manager.SecurityManager;
 import app.deyal.deyal_server.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +37,11 @@ public class MissionEventEndpointImpl implements MissionEventEndpoint {
         try {
             String userId = securityManager.verify(token);
             User user = authManager.retrieveUserById(userId);
+
             List<MissionEvent> missionEvents = missionEventManager.findAllMissionEvents(missionId);
             return ResponseEntity.ok(ApiError.SUCCESS.toMap(missionEvents));
         } catch (ApiError er) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er.toMap());
         } catch (Exception ex) {
             log.error("Unknown exception", ex);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiError.UNKNOWN.toMap());
@@ -50,43 +51,58 @@ public class MissionEventEndpointImpl implements MissionEventEndpoint {
     @Override
     public ResponseEntity<?> addEventToMission(String token, MissionEvent missionEvent) {
         try {
+            //verify that user exists
             String userId = securityManager.verify(token);
-            User user = authManager.retrieveUserById(userId); //to verify that user exists
+            User user = authManager.retrieveUserById(userId);
+
             missionEvent.setId(null);
             missionEvent.setEventTime(new Date());
-
             missionEventManager.addEvent(missionEvent);
-            Mission mission = missionManager.retrieveMissionById(missionEvent.getMissionId());;
+
+            Mission mission = missionManager.retrieveMissionById(missionEvent.getMissionId());
             switch (missionEvent.getEventType()) {
-                case REQUEST:
+                case REQUEST:   //if someone requests then notify creator
                     authManager.addNotificationToUser(mission.getCreatorId(), Message.missionRequestedNotification, mission.getId());
                     break;
-                case ASSIGN:
-                    mission.setContractorId(missionEvent.getAssign().getAssignTo());
+                case ASSIGN:    //if creator assigns someone, notify them
+                    String contractorId = missionEvent.getAssign().getAssignTo();
+                    mission.setContractorId(contractorId);
+                    mission.setContractorName(missionEvent.getUsername());
                     missionManager.updateMission(mission);
-                    authManager.addMissionToUser(mission.getContractorId(), missionEvent.getMissionId(), RequestType.ONGOING);
-                    authManager.addNotificationToUser(mission.getContractorId(), Message.missionAssignedNotification, mission.getId());
+
+                    authManager.addMissionToUser(contractorId, mission.getId(), RequestType.ONGOING);
+                    authManager.addNotificationToUser(contractorId, Message.missionAssignedNotification, mission.getId());
                     break;
-                case SUBMIT:
+                case SUBMIT:    //if contractor submits results, then notify creator
                     authManager.addNotificationToUser(mission.getCreatorId(), Message.missionSubmittedNotification, mission.getId());
                     break;
-                case APPROVE:
+                case APPROVE:   //if creator approves results, then notify contractor
                     authManager.addNotificationToUser(mission.getContractorId(), Message.missionApprovedNotification, mission.getId());
                     break;
-                case REJECT:
-                    authManager.addMissionToUser(mission.getContractorId(), missionEvent.getMissionId(), RequestType.FAILED);
+                case REJECT:    //if creator rejects results, then notify contractor
+                    authManager.addMissionToUser(mission.getContractorId(), mission.getId(), RequestType.FAILED);
                     authManager.addNotificationToUser(mission.getContractorId(), Message.missionRejectedNotification, mission.getId());
-                    authManager.changeRating(mission.getCreatorId(), RequestType.CLIENT_DECREASE, mission.getDifficulty());          //decrease creator rating
-                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_DECREASE, mission.getDifficulty());   //decrease contractor rating
+
+                    //decrease rating for both creator and contractor
+                    authManager.changeRating(mission.getCreatorId(), RequestType.CLIENT_DECREASE, mission.getDifficulty());
+                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_DECREASE, mission.getDifficulty());
                     break;
-                case REVIEW:
-                    authManager.addMissionToUser(user.getId(), missionEvent.getMissionId(), RequestType.COMPLETED);
-                    authManager.addNotificationToUser(mission.getCreatorId(), Message.missionCompletedNotification, mission.getId());
-                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_INCREASE, mission.getDifficulty());   //increase contractor rating
-                    authManager.changeRating(mission.getCreatorId(),    //increase or decrease creator rating based on reward given or not
-                            missionEvent.getReview().isGotReward() ? RequestType.CLIENT_INCREASE : RequestType.CLIENT_DECREASE_MORE, mission.getDifficulty());
+                case REVIEW:    //if mission is completes notify both creator and contractor
+                    authManager.addMissionToUser(user.getId(), mission.getId(), RequestType.COMPLETED);
+                    authManager.addNotificationToUser(mission.getCreatorId(), Message.missionCompletedNotificationClient, mission.getId());
+                    authManager.addNotificationToUser(mission.getContractorId(), Message.missionCompletedNotificationContractor, mission.getId());
+
+                    //increase contractor rating
+                    authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_INCREASE, mission.getDifficulty());
+                    //increase or decrease creator rating based on reward given or not
+                    authManager.changeRating(
+                            mission.getCreatorId(),
+                            missionEvent.getReview().isGotReward() ? RequestType.CLIENT_INCREASE : RequestType.CLIENT_DECREASE_MORE,
+                            mission.getDifficulty()
+                    );
                     break;
             }
+
             return ResponseEntity.ok(ApiError.SUCCESS.toMap());
         } catch (ApiError er) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(er.toMap());

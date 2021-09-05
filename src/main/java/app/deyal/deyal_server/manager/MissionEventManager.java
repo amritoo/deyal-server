@@ -23,7 +23,7 @@ public class MissionEventManager {
 
     public MissionEvent findById(String eventId) throws ApiError {
         Optional<MissionEvent> entity = missionEventRepository.findById(eventId);
-        if(!entity.isPresent())
+        if (!entity.isPresent())
             throw ApiError.NOT_FOUND;
         return entity.get();
     }

@@ -6,23 +6,11 @@ import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @CrossOrigin
 @RestController("AuthEndpoint_v1")
-@Api(tags = {"AuthEndpoint"}, value = "Handles Authentications")
+@Api(tags = {"AuthEndpoint"}, value = "Handles authentication and user profile operations")
 @RequestMapping("/v1/auth")
 public interface AuthEndpoint {
-
-    @GetMapping(value = "/list/name")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved User name list", response = Map.class)
-    })
-    @ApiOperation("Retrieves an existing user")
-    ResponseEntity<?> listUserName(
-            @ApiParam(required = true, value = "Token")
-            @RequestParam(value = "token") String token
-    );
 
     @PostMapping(value = "/register")
     @ApiResponses(value = {
@@ -40,7 +28,7 @@ public interface AuthEndpoint {
     })
     @ApiOperation("Login an existing user")
     ResponseEntity<?> login(
-            @ApiParam(required = true, value = "Email Address")
+            @ApiParam(required = true, value = "Email")
             @RequestParam(value = "email") String email,
             @ApiParam(required = true, value = "Password")
             @RequestParam(value = "password") String password
@@ -56,6 +44,30 @@ public interface AuthEndpoint {
             @RequestParam(value = "token") String token
     );
 
+    @GetMapping(value = "/search")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved User", response = User.class)
+    })
+    @ApiOperation("Retrieves an existing user by userId")
+    ResponseEntity<?> search(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token,
+            @ApiParam(required = true, value = "User id")
+            @RequestParam(value = "userId") String id
+    );
+
+    @GetMapping(value = "/search/name")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved Username", response = String.class)
+    })
+    @ApiOperation("Retrieves an existing username by userId")
+    ResponseEntity<?> username(
+            @ApiParam(required = true, value = "Token")
+            @RequestParam(value = "token") String token,
+            @ApiParam(required = true, value = "User id")
+            @RequestParam(value = "userId") String userId
+    );
+
     @PutMapping(value = "/update/user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated User")
@@ -68,7 +80,7 @@ public interface AuthEndpoint {
             @RequestBody User user
     );
 
-    @PostMapping(value = "/update/password")
+    @PutMapping(value = "/update/password")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully changed to new password")
     })
@@ -76,22 +88,10 @@ public interface AuthEndpoint {
     ResponseEntity<?> changePassword(
             @ApiParam(required = true, value = "Token")
             @RequestParam(value = "token") String token,
-            @ApiParam(required = true, value = "Old Password")
+            @ApiParam(required = true, value = "Old password")
             @RequestParam(value = "oldPassword") String oldPassword,
-            @ApiParam(required = true, value = "New Password")
+            @ApiParam(required = true, value = "New password")
             @RequestParam(value = "newPassword") String newPassword
-    );
-
-    @GetMapping(value = "/search")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved User", response = User.class)
-    })
-    @ApiOperation("Retrieves an existing user by userId")
-    ResponseEntity<?> search(
-            @ApiParam(required = true, value = "Token")
-            @RequestParam(value = "token") String token,
-            @ApiParam(required = true, value = "UserId")
-            @RequestParam(value = "userId") String id
     );
 
     @PostMapping(value = "/forgot/send")

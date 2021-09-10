@@ -68,6 +68,8 @@ public class MissionEventEndpointImpl implements MissionEventEndpoint {
                     String contractorId = missionEvent.getAssign().getAssignTo();
                     mission.setContractorId(contractorId);
                     mission.setContractorName(missionEvent.getUsername());
+                    //change mission name to [Assigned] name or [A] name
+                    mission.setTitle("[A] " + mission.getTitle());
                     missionManager.updateMission(mission);
 
                     authManager.addMissionToUser(contractorId, mission.getId(), RequestType.ONGOING);
@@ -83,6 +85,10 @@ public class MissionEventEndpointImpl implements MissionEventEndpoint {
                     authManager.addMissionToUser(mission.getContractorId(), mission.getId(), RequestType.FAILED);
                     authManager.addNotificationToUser(mission.getContractorId(), Message.missionRejectedNotification, mission.getId());
 
+                    //change mission name to [Failed] name or [F] name
+                    mission.setTitle("[F]" + mission.getTitle());
+                    missionManager.updateMission(mission);
+
                     //decrease rating for both creator and contractor
                     authManager.changeRating(mission.getCreatorId(), RequestType.CLIENT_DECREASE, mission.getDifficulty());
                     authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_DECREASE, mission.getDifficulty());
@@ -91,6 +97,10 @@ public class MissionEventEndpointImpl implements MissionEventEndpoint {
                     authManager.addMissionToUser(user.getId(), mission.getId(), RequestType.COMPLETED);
                     authManager.addNotificationToUser(mission.getCreatorId(), Message.missionCompletedNotificationClient, mission.getId());
                     authManager.addNotificationToUser(mission.getContractorId(), Message.missionCompletedNotificationContractor, mission.getId());
+
+                    //change mission name to [Successful] name or [S] name
+                    mission.setTitle("[S]" + mission.getTitle());
+                    missionManager.updateMission(mission);
 
                     //increase contractor rating
                     authManager.changeRating(mission.getContractorId(), RequestType.CONTRACTOR_INCREASE, mission.getDifficulty());

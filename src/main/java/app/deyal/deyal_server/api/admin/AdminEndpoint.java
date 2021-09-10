@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController("AdminEndpoint_v1")
 @Api(tags = {"AdminEndpoint"}, value = "Handles Admin operations")
-@RequestMapping("/v1/admin")
+@RequestMapping("/admin")
 public interface AdminEndpoint {
 
     @GetMapping(value = "/auth/user/all")

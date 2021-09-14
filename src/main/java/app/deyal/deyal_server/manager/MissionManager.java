@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,7 @@ public class MissionManager {
                 assigned.add(mission);
             else notAssigned.add(mission);
         }
+        assigned.sort(Comparator.comparing(Mission::getTitle));
         notAssigned.addAll(assigned);
         return notAssigned;
     }
